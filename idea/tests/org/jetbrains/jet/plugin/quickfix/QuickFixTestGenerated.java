@@ -1534,6 +1534,11 @@ public class QuickFixTestGenerated extends AbstractQuickFixTest {
             doTest("idea/testData/quickfix/typeMismatch/beforeReturnTypeMismatch.kt");
         }
         
+        @TestMetadata("beforeTooManyArgumentsException.kt")
+        public void testTooManyArgumentsException() throws Exception {
+            doTest("idea/testData/quickfix/typeMismatch/beforeTooManyArgumentsException.kt");
+        }
+        
         @TestMetadata("idea/testData/quickfix/typeMismatch/casts")
         public static class Casts extends AbstractQuickFixTest {
             public void testAllFilesPresentInCasts() throws Exception {
