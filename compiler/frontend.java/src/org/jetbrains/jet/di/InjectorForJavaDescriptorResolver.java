@@ -24,6 +24,7 @@ import org.jetbrains.jet.lang.resolve.java.resolver.TraceBasedJavaResolverCache;
 import org.jetbrains.jet.lang.resolve.java.resolver.TraceBasedErrorReporterProvider;
 import org.jetbrains.jet.lang.resolve.java.resolver.PsiBasedMethodSignatureChecker;
 import org.jetbrains.jet.lang.resolve.java.resolver.PsiBasedExternalAnnotationResolver;
+import org.jetbrains.jet.lang.resolve.java.resolver.ProgressCheckerImpl;
 import org.jetbrains.jet.lang.resolve.java.JavaDescriptorResolver;
 import org.jetbrains.jet.lang.resolve.java.PsiClassFinderImpl;
 import org.jetbrains.jet.lang.resolve.java.resolver.JavaAnnotationResolver;
@@ -54,6 +55,7 @@ public class InjectorForJavaDescriptorResolver {
     private TraceBasedErrorReporterProvider traceBasedErrorReporterProvider;
     private PsiBasedMethodSignatureChecker psiBasedMethodSignatureChecker;
     private PsiBasedExternalAnnotationResolver psiBasedExternalAnnotationResolver;
+    private ProgressCheckerImpl progressChecker;
     private JavaDescriptorResolver javaDescriptorResolver;
     private PsiClassFinderImpl psiClassFinder;
     private JavaAnnotationResolver javaAnnotationResolver;
@@ -83,6 +85,7 @@ public class InjectorForJavaDescriptorResolver {
         this.traceBasedErrorReporterProvider = new TraceBasedErrorReporterProvider();
         this.psiBasedMethodSignatureChecker = new PsiBasedMethodSignatureChecker();
         this.psiBasedExternalAnnotationResolver = new PsiBasedExternalAnnotationResolver();
+        this.progressChecker = new ProgressCheckerImpl();
         this.javaDescriptorResolver = new JavaDescriptorResolver();
         this.psiClassFinder = new PsiClassFinderImpl();
         this.javaAnnotationResolver = new JavaAnnotationResolver();
@@ -167,6 +170,7 @@ public class InjectorForJavaDescriptorResolver {
         javaMemberResolver.setConstructorResolver(javaConstructorResolver);
         javaMemberResolver.setFunctionResolver(javaFunctionResolver);
         javaMemberResolver.setNamespaceResolver(javaNamespaceResolver);
+        javaMemberResolver.setProgressChecker(progressChecker);
         javaMemberResolver.setPropertyResolver(javaPropertyResolver);
 
         javaConstructorResolver.setCache(traceBasedJavaResolverCache);

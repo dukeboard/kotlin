@@ -16,7 +16,6 @@
 
 package org.jetbrains.jet.lang.resolve.java.scope;
 
-import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
@@ -144,9 +143,9 @@ public abstract class JavaBaseScope extends JetScopeImpl {
         Collection<DeclarationDescriptor> result = new ArrayList<DeclarationDescriptor>();
         for (NamedMembers members : membersProvider.allMembers()) {
             Name name = members.getName();
-            ProgressIndicatorProvider.checkCanceled();
+            memberResolver.checkCanceled();
             result.addAll(getFunctions(name));
-            ProgressIndicatorProvider.checkCanceled();
+            memberResolver.checkCanceled();
             result.addAll(getProperties(name));
         }
         return result;

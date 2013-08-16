@@ -110,6 +110,7 @@ public class GenerateInjectors {
         generator.addField(TraceBasedErrorReporterProvider.class);
         generator.addField(PsiBasedMethodSignatureChecker.class);
         generator.addField(PsiBasedExternalAnnotationResolver.class);
+        generator.addField(ProgressCheckerImpl.class);
         generator.addPublicField(NamespaceFactoryImpl.class);
         generator.generate("compiler/frontend.java/src", "org.jetbrains.jet.di", "InjectorForTopDownAnalyzerForJvm",
                            GenerateInjectors.class);
@@ -129,6 +130,7 @@ public class GenerateInjectors {
         generator.addField(TraceBasedErrorReporterProvider.class);
         generator.addField(PsiBasedMethodSignatureChecker.class);
         generator.addField(PsiBasedExternalAnnotationResolver.class);
+        generator.addField(ProgressCheckerImpl.class);
         generator.addPublicField(JavaDescriptorResolver.class);
         generator.addPublicField(PsiClassFinderImpl.class);
 

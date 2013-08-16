@@ -36,6 +36,7 @@ import org.jetbrains.jet.lang.resolve.java.resolver.TraceBasedJavaResolverCache;
 import org.jetbrains.jet.lang.resolve.java.resolver.TraceBasedErrorReporterProvider;
 import org.jetbrains.jet.lang.resolve.java.resolver.PsiBasedMethodSignatureChecker;
 import org.jetbrains.jet.lang.resolve.java.resolver.PsiBasedExternalAnnotationResolver;
+import org.jetbrains.jet.lang.resolve.java.resolver.ProgressCheckerImpl;
 import org.jetbrains.jet.lang.resolve.NamespaceFactoryImpl;
 import org.jetbrains.jet.lang.resolve.DeclarationResolver;
 import org.jetbrains.jet.lang.resolve.AnnotationResolver;
@@ -93,6 +94,7 @@ public class InjectorForTopDownAnalyzerForJvm implements InjectorForTopDownAnaly
     private TraceBasedErrorReporterProvider traceBasedErrorReporterProvider;
     private PsiBasedMethodSignatureChecker psiBasedMethodSignatureChecker;
     private PsiBasedExternalAnnotationResolver psiBasedExternalAnnotationResolver;
+    private ProgressCheckerImpl progressChecker;
     private NamespaceFactoryImpl namespaceFactory;
     private DeclarationResolver declarationResolver;
     private AnnotationResolver annotationResolver;
@@ -151,6 +153,7 @@ public class InjectorForTopDownAnalyzerForJvm implements InjectorForTopDownAnaly
         this.traceBasedErrorReporterProvider = new TraceBasedErrorReporterProvider();
         this.psiBasedMethodSignatureChecker = new PsiBasedMethodSignatureChecker();
         this.psiBasedExternalAnnotationResolver = new PsiBasedExternalAnnotationResolver();
+        this.progressChecker = new ProgressCheckerImpl();
         this.namespaceFactory = new NamespaceFactoryImpl();
         this.declarationResolver = new DeclarationResolver();
         this.annotationResolver = new AnnotationResolver();
@@ -354,6 +357,7 @@ public class InjectorForTopDownAnalyzerForJvm implements InjectorForTopDownAnaly
         javaMemberResolver.setConstructorResolver(javaConstructorResolver);
         javaMemberResolver.setFunctionResolver(javaFunctionResolver);
         javaMemberResolver.setNamespaceResolver(javaNamespaceResolver);
+        javaMemberResolver.setProgressChecker(progressChecker);
         javaMemberResolver.setPropertyResolver(javaPropertyResolver);
 
         javaConstructorResolver.setCache(traceBasedJavaResolverCache);

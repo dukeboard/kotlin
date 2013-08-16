@@ -34,6 +34,7 @@ public class JavaMemberResolver {
     private JavaFunctionResolver functionResolver;
     private JavaPropertyResolver propertyResolver;
     private JavaConstructorResolver constructorResolver;
+    private ProgressChecker progressChecker;
 
     @Inject
     public void setClassResolver(JavaClassResolver classResolver) {
@@ -58,6 +59,11 @@ public class JavaMemberResolver {
     @Inject
     public void setConstructorResolver(JavaConstructorResolver constructorResolver) {
         this.constructorResolver = constructorResolver;
+    }
+
+    @Inject
+    public void setProgressChecker(ProgressChecker progressChecker) {
+        this.progressChecker = progressChecker;
     }
 
     @Nullable
@@ -88,5 +94,9 @@ public class JavaMemberResolver {
     @NotNull
     public Collection<ConstructorDescriptor> resolveConstructors(@NotNull JavaClass javaClass, @NotNull ClassDescriptor classDescriptor) {
         return constructorResolver.resolveConstructors(javaClass, classDescriptor);
+    }
+
+    public void checkCanceled() {
+        progressChecker.checkCanceled();
     }
 }
