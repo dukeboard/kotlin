@@ -243,16 +243,8 @@ public class ClosureExpressionsTypingVisitor extends ExpressionTypingVisitor {
             @NotNull SimpleFunctionDescriptorImpl functionDescriptor,
             boolean functionTypeExpected
     ) {
-        TemporaryBindingTrace temporaryTrace = TemporaryBindingTrace.create(context.trace, "trace to resolve function literal expression", expression);
         JetType expectedReturnType = functionTypeExpected ? KotlinBuiltIns.getInstance().getReturnTypeFromFunctionType(context.expectedType) : null;
-        JetType returnType = computeUnsafeReturnType(expression, context, functionDescriptor, temporaryTrace, expectedReturnType);
-
-        temporaryTrace.commit(new TraceEntryFilter() {
-            @Override
-            public boolean accept(@NotNull WritableSlice<?, ?> slice, Object key) {
-                return (slice != BindingContext.TRACE_DELTAS_CACHE);
-            }
-        }, true);
+        JetType returnType = computeUnsafeReturnType(expression, context, functionDescriptor, expectedReturnType);
 
         if (!expression.getFunctionLiteral().hasDeclaredReturnType() && functionTypeExpected) {
             if (KotlinBuiltIns.getInstance().isUnit(expectedReturnType)) {
@@ -267,7 +259,6 @@ public class ClosureExpressionsTypingVisitor extends ExpressionTypingVisitor {
             @NotNull JetFunctionLiteralExpression expression,
             @NotNull ExpressionTypingContext context,
             @NotNull SimpleFunctionDescriptorImpl functionDescriptor,
-            @NotNull TemporaryBindingTrace temporaryTrace,
             @Nullable JetType expectedReturnType
     ) {
         JetFunctionLiteral functionLiteral = expression.getFunctionLiteral();
@@ -279,17 +270,16 @@ public class ClosureExpressionsTypingVisitor extends ExpressionTypingVisitor {
         if (returnTypeRef != null) {
             JetType returnType = context.expressionTypingServices.getTypeResolver().resolveType(context.scope, returnTypeRef, context.trace, true);
             context.expressionTypingServices.checkFunctionReturnType(expression.getFunctionLiteral(), context.replaceScope(functionInnerScope).
-                    replaceExpectedType(returnType).replaceBindingTrace(temporaryTrace), temporaryTrace);
+                    replaceExpectedType(returnType), context.trace);
             if (expectedReturnType != null) {
                 if (!JetTypeChecker.INSTANCE.isSubtypeOf(returnType, expectedReturnType)) {
-                    temporaryTrace.report(EXPECTED_RETURN_TYPE_MISMATCH.on(returnTypeRef, expectedReturnType));
+                    context.trace.report(EXPECTED_RETURN_TYPE_MISMATCH.on(returnTypeRef, expectedReturnType));
                 }
             }
             return returnType;
         }
-        ExpressionTypingContext newContext = context.replaceExpectedType(expectedReturnType != null ? expectedReturnType : NO_EXPECTED_TYPE)
-                .replaceBindingTrace(temporaryTrace);
-        return context.expressionTypingServices.getBlockReturnedType(functionInnerScope, bodyExpression, CoercionStrategy.COERCION_TO_UNIT,
-                                                                     newContext, temporaryTrace).getType();
+        ExpressionTypingContext newContext = context.replaceExpectedType(expectedReturnType != null ? expectedReturnType : NO_EXPECTED_TYPE);
+        return context.expressionTypingServices.getBlockReturnedType(
+                functionInnerScope, bodyExpression, CoercionStrategy.COERCION_TO_UNIT, newContext, context.trace).getType();
     }
 }
