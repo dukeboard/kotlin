@@ -53,7 +53,7 @@ import java.util.*;
 
 import static org.jetbrains.jet.lang.diagnostics.Errors.*;
 import static org.jetbrains.jet.lang.resolve.BindingContext.*;
-import static org.jetbrains.jet.lang.types.TypeUtils.UNKNOWN_EXPECTED_TYPE;
+import static org.jetbrains.jet.lang.types.TypeUtils.NO_EXPECTED_TYPE;
 import static org.jetbrains.jet.lang.types.TypeUtils.noExpectedType;
 import static org.jetbrains.jet.lang.types.expressions.ControlStructureTypingUtils.*;
 import static org.jetbrains.jet.lang.types.expressions.ExpressionTypingUtils.*;
@@ -112,29 +112,19 @@ public class ControlStructureTypingVisitor extends ExpressionTypingVisitor {
             return getTypeInfoWhenOnlyOneBranchIsPresent(
                     elseBranch, elseScope, elseInfo, thenInfo, contextWithExpectedType, ifExpression, isStatement);
         }
-
-        JetTypeInfo thenTypeInfo;
-        JetTypeInfo elseTypeInfo;
-
-        if (contextWithExpectedType.expectedType == UNKNOWN_EXPECTED_TYPE) {
-            Call callForIf = createCallForSpecialConstruction(ifExpression, Lists.newArrayList(thenBranch, elseBranch));
-            MutableDataFlowInfoForArguments dataFlowInfoForArguments =
+        Call callForIf = createCallForSpecialConstruction(ifExpression, Lists.newArrayList(thenBranch, elseBranch));
+        MutableDataFlowInfoForArguments dataFlowInfoForArguments =
                     createDataFlowInfoForArgumentsForIfCall(callForIf, thenInfo, elseInfo);
-            resolveSpecialConstructionAsCall(
-                    callForIf, "If", Lists.newArrayList("thenBranch", "elseBranch"),
-                    Lists.newArrayList(false, false),
-                    contextWithExpectedType, dataFlowInfoForArguments);
+        ResolvedCall<FunctionDescriptor> resolvedCall = resolveSpecialConstructionAsCall(
+                callForIf, "If", Lists.newArrayList("thenBranch", "elseBranch"),
+                Lists.newArrayList(false, false),
+                contextWithExpectedType, dataFlowInfoForArguments);
 
-            thenTypeInfo = BindingContextUtils.getRecordedTypeInfo(thenBranch, context.trace.getBindingContext());
-            elseTypeInfo = BindingContextUtils.getRecordedTypeInfo(elseBranch, context.trace.getBindingContext());
-            assert thenTypeInfo != null : "'Then' branch of if expression  was not processed: " + ifExpression;
-            assert elseTypeInfo != null : "'Else' branch of if expression  was not processed: " + ifExpression;
-        }
-        else {
-            CoercionStrategy coercionStrategy = isStatement ? CoercionStrategy.COERCION_TO_UNIT : CoercionStrategy.NO_COERCION;
-            thenTypeInfo = context.expressionTypingServices.getBlockReturnedTypeWithWritableScope(thenScope, Collections.singletonList(thenBranch), coercionStrategy, contextWithExpectedType.replaceDataFlowInfo(thenInfo), context.trace);
-            elseTypeInfo = context.expressionTypingServices.getBlockReturnedTypeWithWritableScope(elseScope, Collections.singletonList(elseBranch), coercionStrategy, contextWithExpectedType.replaceDataFlowInfo(elseInfo), context.trace);
-        }
+        JetTypeInfo thenTypeInfo = BindingContextUtils.getRecordedTypeInfo(thenBranch, context.trace.getBindingContext());
+        JetTypeInfo elseTypeInfo = BindingContextUtils.getRecordedTypeInfo(elseBranch, context.trace.getBindingContext());
+        assert thenTypeInfo != null : "'Then' branch of if expression  was not processed: " + ifExpression;
+        assert elseTypeInfo != null : "'Else' branch of if expression  was not processed: " + ifExpression;
+
         JetType thenType = thenTypeInfo.getType();
         JetType elseType = elseTypeInfo.getType();
         DataFlowInfo thenDataFlowInfo = thenTypeInfo.getDataFlowInfo();
@@ -154,7 +144,7 @@ public class ControlStructureTypingVisitor extends ExpressionTypingVisitor {
             result = thenTypeInfo;
         }
         else {
-            result = JetTypeInfo.create(TypeUtils.commonSupertypeForPossiblyNumberTypes(Arrays.asList(thenType, elseType)), thenDataFlowInfo.or(elseDataFlowInfo));
+            result = JetTypeInfo.create(resolvedCall.getResultingDescriptor().getReturnType(), thenDataFlowInfo.or(elseDataFlowInfo));
         }
 
         return DataFlowUtils.checkImplicitCast(result.getType(), ifExpression, contextWithExpectedType, isStatement, result.getDataFlowInfo());
@@ -170,8 +160,10 @@ public class ControlStructureTypingVisitor extends ExpressionTypingVisitor {
             @NotNull JetIfExpression ifExpression,
             boolean isStatement
     ) {
-        JetTypeInfo typeInfo = context.expressionTypingServices.getBlockReturnedTypeWithWritableScope(presentScope, Collections
-                .singletonList(presentBranch), CoercionStrategy.NO_COERCION, context.replaceDataFlowInfo(presentInfo), context.trace);
+        ExpressionTypingContext newContext = context.replaceDataFlowInfo(presentInfo).replaceExpectedType(NO_EXPECTED_TYPE)
+                .replaceContextDependency(ContextDependency.INDEPENDENT);
+        JetTypeInfo typeInfo = context.expressionTypingServices.getBlockReturnedTypeWithWritableScope(
+                presentScope, Collections.singletonList(presentBranch), CoercionStrategy.NO_COERCION, newContext, context.trace);
         JetType type = typeInfo.getType();
         DataFlowInfo dataFlowInfo;
         if (type != null && KotlinBuiltIns.getInstance().isNothing(type)) {
@@ -558,7 +550,8 @@ public class ControlStructureTypingVisitor extends ExpressionTypingVisitor {
             }
         }
         if (returnedExpression != null) {
-            facade.getTypeInfo(returnedExpression, context.replaceExpectedType(expectedType).replaceScope(context.scope));
+            facade.getTypeInfo(returnedExpression, context.replaceExpectedType(expectedType).replaceScope(context.scope)
+                    .replaceContextDependency(ContextDependency.INDEPENDENT));
         }
         else {
             if (expectedType != null && !noExpectedType(expectedType) && !KotlinBuiltIns.getInstance().isUnit(expectedType)) {
