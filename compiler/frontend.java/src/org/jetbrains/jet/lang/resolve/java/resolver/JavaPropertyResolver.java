@@ -16,7 +16,6 @@
 
 package org.jetbrains.jet.lang.resolve.java.resolver;
 
-import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
@@ -82,7 +81,7 @@ public final class JavaPropertyResolver {
             }
         }
 
-        Set<PropertyDescriptor> properties = Sets.newHashSet();
+        Set<PropertyDescriptor> properties = new HashSet<PropertyDescriptor>();
         if (owner instanceof ClassDescriptor) {
             ClassDescriptor classDescriptor = (ClassDescriptor) owner;
 
@@ -93,7 +92,7 @@ public final class JavaPropertyResolver {
 
         properties.addAll(propertiesFromCurrent);
 
-        return Sets.<VariableDescriptor>newHashSet(properties);
+        return new HashSet<VariableDescriptor>(properties);
     }
 
     @NotNull

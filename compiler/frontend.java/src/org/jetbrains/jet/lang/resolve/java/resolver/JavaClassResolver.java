@@ -16,12 +16,7 @@
 
 package org.jetbrains.jet.lang.resolve.java.resolver;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import gnu.trove.THashMap;
-import gnu.trove.TObjectHashingStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.descriptors.serialization.ClassId;
@@ -37,7 +32,6 @@ import org.jetbrains.jet.lang.resolve.java.scope.JavaClassNonStaticMembersScope;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaClass;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaMethod;
 import org.jetbrains.jet.lang.resolve.name.FqName;
-import org.jetbrains.jet.lang.resolve.name.FqNameBase;
 import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -57,27 +51,11 @@ import static org.jetbrains.jet.lang.resolve.java.resolver.DeserializedResolverU
 
 public final class JavaClassResolver {
 
-    // NOTE: this complexity is introduced because class descriptors do not always have valid fqnames (class objects)
     @NotNull
-    private final Map<FqNameBase, ClassDescriptor> classDescriptorCache =
-            new THashMap<FqNameBase, ClassDescriptor>(new TObjectHashingStrategy<FqNameBase>() {
-                @Override
-                public int computeHashCode(FqNameBase o) {
-                    if (o instanceof FqName) {
-                        return ((FqName) o).toUnsafe().hashCode();
-                    }
-                    assert o instanceof FqNameUnsafe;
-                    return o.hashCode();
-                }
-
-                @Override
-                public boolean equals(FqNameBase n1, FqNameBase n2) {
-                    return n1.equalsTo(n2.toString()) && n2.equalsTo(n1.toString());
-                }
-            });
+    private final Map<FqNameUnsafe, ClassDescriptor> classDescriptorCache = new HashMap<FqNameUnsafe, ClassDescriptor>();
 
     @NotNull
-    private final Set<FqNameBase> unresolvedCache = Sets.newHashSet();
+    private final Set<FqNameUnsafe> unresolvedCache = new HashSet<FqNameUnsafe>();
 
     private JavaResolverCache cache;
     private ErrorReporterProvider errorReporterProvider;
@@ -220,11 +198,11 @@ public final class JavaClassResolver {
         return createJavaClassDescriptor(qualifiedName, javaClass, tasks);
     }
 
-    private void cacheNegativeValue(@NotNull FqNameBase qualifiedName) {
-        if (unresolvedCache.contains(qualifiedName) || classDescriptorCache.containsKey(qualifiedName)) {
-            throw new IllegalStateException("rewrite at " + qualifiedName);
+    private void cacheNegativeValue(@NotNull FqNameUnsafe fqName) {
+        if (unresolvedCache.contains(fqName) || classDescriptorCache.containsKey(fqName)) {
+            throw new IllegalStateException("rewrite at " + fqName);
         }
-        unresolvedCache.add(qualifiedName);
+        unresolvedCache.add(fqName);
     }
 
     private static boolean isTraitImplementation(@NotNull FqName qualifiedName) {
@@ -246,7 +224,8 @@ public final class JavaClassResolver {
             return cachedDescriptor;
         }
 
-        assert (!unresolvedCache.contains(fqName)) : "We can resolve the class, so it can't be 'unresolved' during parent resolution";
+        assert !unresolvedCache.contains(fqName.toUnsafe())
+                : "We can resolve the class, so it can't be 'unresolved' during parent resolution";
 
         VirtualFile outerClassFile = javaClass.getPsi().getContainingFile().getVirtualFile();
         if (outerClassFile != null) {
@@ -284,7 +263,7 @@ public final class JavaClassResolver {
         JavaTypeParameterResolver.Initializer typeParameterInitializer = typeParameterResolver.resolveTypeParameters(classDescriptor, javaClass);
         classDescriptor.setTypeParameterDescriptors(typeParameterInitializer.getDescriptors());
 
-        List<JetType> supertypes = Lists.newArrayList();
+        List<JetType> supertypes = new ArrayList<JetType>();
         classDescriptor.setSupertypes(supertypes);
         classDescriptor.setVisibility(javaClass.getVisibility());
         classDescriptor.setModality(javaClass.getModality());
@@ -347,7 +326,7 @@ public final class JavaClassResolver {
 
     @NotNull
     private static SimpleFunctionDescriptor findFunctionWithMostSpecificReturnType(@NotNull Set<JetType> supertypes) {
-        List<SimpleFunctionDescriptor> candidates = Lists.newArrayList();
+        List<SimpleFunctionDescriptor> candidates = new ArrayList<SimpleFunctionDescriptor>(supertypes.size());
         for (JetType supertype : supertypes) {
             List<CallableMemberDescriptor> abstractMembers = SingleAbstractMethodUtils.getAbstractMembers(supertype);
             if (!abstractMembers.isEmpty()) {
@@ -369,7 +348,7 @@ public final class JavaClassResolver {
         return currentMostSpecificType;
     }
 
-    private void cache(@NotNull FqNameBase fqName, @Nullable ClassDescriptor classDescriptor) {
+    private void cache(@NotNull FqNameUnsafe fqName, @Nullable ClassDescriptor classDescriptor) {
         if (classDescriptor == null) {
             cacheNegativeValue(fqName);
         }
@@ -413,7 +392,7 @@ public final class JavaClassResolver {
                 correctedSegments.add(segment);
             }
         }
-        return new FqNameUnsafe(StringUtil.join(correctedSegments, "."));
+        return FqNameUnsafe.fromSegments(correctedSegments);
     }
 
     private static boolean isInnerClass(@NotNull JavaClass javaClass) {
