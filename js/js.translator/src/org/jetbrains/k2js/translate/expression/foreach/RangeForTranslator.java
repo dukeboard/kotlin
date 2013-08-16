@@ -62,6 +62,7 @@ public final class RangeForTranslator extends ForTranslator {
 
     private RangeForTranslator(@NotNull JetForExpression forExpression, @NotNull TranslationContext context) {
         super(forExpression, context);
+        assert !parameterIsMultiDeclaration() : "In this for translator parameter must be simple";
         rangeExpression = context.declareTemporary(Translation.translateAsExpression(getLoopRange(expression), context));
         start = context().declareTemporary(callFunction("get_start"));
         end = context().declareTemporary(callFunction("get_end"));

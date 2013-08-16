@@ -62,6 +62,7 @@ public final class RangeLiteralForTranslator extends ForTranslator {
 
     private RangeLiteralForTranslator(@NotNull JetForExpression forExpression, @NotNull TranslationContext context) {
         super(forExpression, context);
+        assert !parameterIsMultiDeclaration() : "In this for translator parameter must be simple";
         JetExpression loopRange = getLoopRange(expression);
         assert loopRange instanceof JetBinaryExpression;
         JetBinaryExpression loopRangeAsBinary = ((JetBinaryExpression) loopRange);

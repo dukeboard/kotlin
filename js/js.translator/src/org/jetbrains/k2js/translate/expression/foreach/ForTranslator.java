@@ -21,8 +21,12 @@ import com.google.dart.compiler.backend.js.ast.JsExpression;
 import com.google.dart.compiler.backend.js.ast.JsName;
 import com.google.dart.compiler.backend.js.ast.JsStatement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.psi.JetForExpression;
+import org.jetbrains.jet.lang.psi.JetMultiDeclaration;
+import org.jetbrains.jet.lang.psi.JetParameter;
 import org.jetbrains.k2js.translate.context.TranslationContext;
+import org.jetbrains.k2js.translate.expression.MultiDeclarationTranslator;
 import org.jetbrains.k2js.translate.general.AbstractTranslator;
 import org.jetbrains.k2js.translate.general.Translation;
 
@@ -51,16 +55,28 @@ public abstract class ForTranslator extends AbstractTranslator {
     protected final JetForExpression expression;
     @NotNull
     protected final JsName parameterName;
+    @Nullable
+    protected final JetMultiDeclaration multiParameter;
 
     protected ForTranslator(@NotNull JetForExpression forExpression, @NotNull TranslationContext context) {
         super(context);
         this.expression = forExpression;
+        this.multiParameter = forExpression.getMultiParameter();
         this.parameterName = declareParameter();
     }
 
     @NotNull
     private JsName declareParameter() {
-        return context().getNameForElement(getLoopParameter(expression));
+        JetParameter loopParameter = getLoopParameter(expression);
+        if (loopParameter != null) {
+            return context().getNameForElement(loopParameter);
+        }
+        assert parameterIsMultiDeclaration() : "If loopParameter is null, multi parameter must be not null";
+        return context().scope().declareTemporary();
+    }
+
+    protected boolean parameterIsMultiDeclaration() {
+        return multiParameter != null;
     }
 
     @NotNull
@@ -69,8 +85,16 @@ public abstract class ForTranslator extends AbstractTranslator {
     }
 
     @NotNull
+    protected JsStatement makeCurrentVarInit(JsExpression itemValue) {
+        if (multiParameter == null) {
+            return newVar(parameterName, itemValue);
+        }
+        return MultiDeclarationTranslator.translateMultiDeclaration(multiParameter, parameterName, itemValue, context());
+    }
+
+    @NotNull
     protected JsStatement translateBody(JsExpression itemValue) {
-        JsStatement currentVar = newVar(parameterName, itemValue);
+        JsStatement currentVar = makeCurrentVarInit(itemValue);
         JsStatement realBody = translateOriginalBodyExpression();
         if (realBody instanceof JsBlock) {
             JsBlock block = (JsBlock) realBody;
