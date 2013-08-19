@@ -162,7 +162,7 @@ public final class JavaNamespaceResolver {
                 if (isCompiledKotlinPackageClass) {
                     // If psiClass has @KotlinPackage (regardless of whether it has @JetPackage or not), deserialize it to Kotlin descriptor.
                     // Note that @KotlinPackage may still have an old ABI version, in which case null is returned by createKotlinPackageScope
-                    VirtualFile file = javaClass.getPsi().getContainingFile().getVirtualFile();
+                    VirtualFile file = javaClass.getFile();
                     if (file != null) {
                         JetScope kotlinPackageScope = deserializedDescriptorResolver.createKotlinPackageScope(namespaceDescriptor,
                                 file, errorReporterProvider.createForClass(javaClass));

@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.lang.resolve.java.structure;
 
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.util.containers.ContainerUtil;
@@ -196,5 +197,11 @@ public class JavaClass extends JavaClassifier
         else {
             return OriginKind.SOURCE;
         }
+    }
+
+    // TODO: wrap VirtualFile
+    @Nullable
+    public VirtualFile getFile() {
+        return getPsi().getContainingFile().getVirtualFile();
     }
 }

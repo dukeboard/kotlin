@@ -227,7 +227,7 @@ public final class JavaClassResolver {
         assert !unresolvedCache.contains(fqName.toUnsafe())
                 : "We can resolve the class, so it can't be 'unresolved' during parent resolution";
 
-        VirtualFile outerClassFile = javaClass.getPsi().getContainingFile().getVirtualFile();
+        VirtualFile outerClassFile = javaClass.getFile();
         if (outerClassFile != null) {
             ClassId id = ClassId.fromFqNameAndContainingDeclaration(fqName, containingDeclaration);
             VirtualFile file = getVirtualFile(id, outerClassFile);
