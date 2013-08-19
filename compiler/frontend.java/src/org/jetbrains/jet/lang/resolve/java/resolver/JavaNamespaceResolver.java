@@ -204,7 +204,7 @@ public final class JavaNamespaceResolver {
 
     private static boolean isOldKotlinPackageClass(@NotNull JavaClass javaClass) {
         //noinspection deprecation
-        return javaClass.findAnnotation(JvmAnnotationNames.OLD_JET_PACKAGE_CLASS_ANNOTATION.getFqName().asString()) != null;
+        return javaClass.findAnnotation(JvmAnnotationNames.OLD_JET_PACKAGE_CLASS_ANNOTATION.getFqName()) != null;
     }
 
     private void cache(@NotNull FqName fqName, @Nullable JetScope packageScope) {
