@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.jet.lang.resolve.java.structure;
+package org.jetbrains.jet.lang.resolve.java.structure.impl;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
@@ -28,12 +28,11 @@ import org.jetbrains.jet.lang.descriptors.ClassKind;
 import org.jetbrains.jet.lang.descriptors.Modality;
 import org.jetbrains.jet.lang.descriptors.Visibility;
 import org.jetbrains.jet.lang.resolve.java.jetAsJava.JetJavaMirrorMarker;
+import org.jetbrains.jet.lang.resolve.java.structure.*;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 
 import java.util.Collection;
-
-import static org.jetbrains.jet.lang.resolve.java.structure.JavaElementCollectionFromPsiArrayUtil.*;
 
 public class JavaClassImpl extends JavaClassifierImpl implements JavaClass {
     public JavaClassImpl(@NotNull PsiClass psiClass) {
@@ -45,7 +44,7 @@ public class JavaClassImpl extends JavaClassifierImpl implements JavaClass {
     @Override
     @NotNull
     public Collection<JavaClass> getInnerClasses() {
-        return classes(getPsi().getInnerClasses());
+        return JavaElementCollectionFromPsiArrayUtil.classes(getPsi().getInnerClasses());
     }
 
     @Override
@@ -101,7 +100,7 @@ public class JavaClassImpl extends JavaClassifierImpl implements JavaClass {
     @NotNull
     @Override
     public Collection<JavaTypeParameter> getTypeParameters() {
-        return typeParameters(getPsi().getTypeParameters());
+        return JavaElementCollectionFromPsiArrayUtil.typeParameters(getPsi().getTypeParameters());
     }
 
     @SuppressWarnings("unchecked")
@@ -109,39 +108,40 @@ public class JavaClassImpl extends JavaClassifierImpl implements JavaClass {
     @NotNull
     public Collection<JavaClassifierType> getSupertypes() {
         // TODO: getPsi().getSuperTypes() ?
-        Collection<JavaClassifierType> superClasses = classifierTypes(getPsi().getExtendsListTypes());
-        Collection<JavaClassifierType> superInterfaces = classifierTypes(getPsi().getImplementsListTypes());
+        Collection<JavaClassifierType> superClasses = JavaElementCollectionFromPsiArrayUtil.classifierTypes(getPsi().getExtendsListTypes());
+        Collection<JavaClassifierType> superInterfaces = JavaElementCollectionFromPsiArrayUtil
+                .classifierTypes(getPsi().getImplementsListTypes());
         return ContainerUtil.collect(ContainerUtil.concat(superClasses, superInterfaces).iterator());
     }
 
     @Override
     @NotNull
     public Collection<JavaMethod> getMethods() {
-        return methods(getPsi().getMethods());
+        return JavaElementCollectionFromPsiArrayUtil.methods(getPsi().getMethods());
     }
 
     @Override
     @NotNull
     public Collection<JavaMethod> getAllMethods() {
-        return methods(getPsi().getAllMethods());
+        return JavaElementCollectionFromPsiArrayUtil.methods(getPsi().getAllMethods());
     }
 
     @Override
     @NotNull
     public Collection<JavaField> getFields() {
-        return fields(getPsi().getFields());
+        return JavaElementCollectionFromPsiArrayUtil.fields(getPsi().getFields());
     }
 
     @Override
     @NotNull
     public Collection<JavaField> getAllFields() {
-        return fields(getPsi().getAllFields());
+        return JavaElementCollectionFromPsiArrayUtil.fields(getPsi().getAllFields());
     }
 
     @Override
     @NotNull
     public Collection<JavaMethod> getConstructors() {
-        return methods(getPsi().getConstructors());
+        return JavaElementCollectionFromPsiArrayUtil.methods(getPsi().getConstructors());
     }
 
     @Override
