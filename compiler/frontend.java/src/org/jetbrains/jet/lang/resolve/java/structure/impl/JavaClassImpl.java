@@ -24,8 +24,6 @@ import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.lang.descriptors.ClassKind;
-import org.jetbrains.jet.lang.descriptors.Modality;
 import org.jetbrains.jet.lang.descriptors.Visibility;
 import org.jetbrains.jet.lang.resolve.java.jetAsJava.JetJavaMirrorMarker;
 import org.jetbrains.jet.lang.resolve.java.structure.*;
@@ -76,25 +74,10 @@ public class JavaClassImpl extends JavaClassifierImpl implements JavaClass, Java
     }
 
     @Override
-    @NotNull
-    public ClassKind getKind() {
-        if (isInterface()) {
-            return isAnnotationType() ? ClassKind.ANNOTATION_CLASS : ClassKind.TRAIT;
-        }
-        return isEnum() ? ClassKind.ENUM_CLASS : ClassKind.CLASS;
-    }
-
-    @Override
     @Nullable
     public JavaClass getOuterClass() {
         PsiClass outer = getPsi().getContainingClass();
         return outer == null ? null : new JavaClassImpl(outer);
-    }
-
-    @Override
-    @NotNull
-    public Modality getModality() {
-        return isAnnotationType() ? Modality.FINAL : Modality.convertFromFlags(isAbstract() || isInterface(), !isFinal());
     }
 
     @NotNull
