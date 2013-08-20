@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.java.AbiVersionUtil;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaClass;
+import org.jetbrains.jet.lang.resolve.java.structure.impl.JavaClassImpl;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,7 @@ public class TraceBasedErrorReporterProvider implements ErrorReporterProvider {
         return new ErrorReporter() {
             @Override
             public void reportIncompatibleAbiVersion(int actualVersion) {
-                AbiVersionUtil.reportIncompatibleAbiVersion(javaClass.getPsi(), actualVersion, trace);
+                AbiVersionUtil.reportIncompatibleAbiVersion(((JavaClassImpl) javaClass).getPsi(), actualVersion, trace);
             }
         };
     }

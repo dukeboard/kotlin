@@ -34,7 +34,7 @@ import org.jetbrains.jet.lang.resolve.name.Name;
 
 import java.util.Collection;
 
-public class JavaClassImpl extends JavaClassifierImpl implements JavaClass {
+public class JavaClassImpl extends JavaClassifierImpl implements JavaClass, JavaAnnotationOwnerImpl, JavaModifierListOwnerImpl {
     public JavaClassImpl(@NotNull PsiClass psiClass) {
         super(psiClass);
         assert !(psiClass instanceof PsiTypeParameter)
