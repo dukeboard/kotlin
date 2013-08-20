@@ -37,9 +37,9 @@ import org.jetbrains.jet.lang.resolve.AnalyzingUtils;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.BindingContextUtils;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
-import org.jetbrains.jet.lang.resolve.java.AbiVersionUtil;
 import org.jetbrains.jet.lang.resolve.java.JavaBindingContext;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
+import org.jetbrains.jet.lang.resolve.java.resolver.TraceBasedErrorReporterProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -146,9 +146,9 @@ public final class AnalyzerWithCompilerReport {
         assert analyzeExhaust != null;
         BindingContext bindingContext = analyzeExhaust.getBindingContext();
 
-        Collection<PsiClass> psiClasses = bindingContext.getKeys(AbiVersionUtil.ABI_VERSION_ERRORS);
+        Collection<PsiClass> psiClasses = bindingContext.getKeys(TraceBasedErrorReporterProvider.ABI_VERSION_ERRORS);
         for (PsiClass psiClass : psiClasses) {
-            Integer abiVersion = bindingContext.get(AbiVersionUtil.ABI_VERSION_ERRORS, psiClass);
+            Integer abiVersion = bindingContext.get(TraceBasedErrorReporterProvider.ABI_VERSION_ERRORS, psiClass);
             messageCollectorWrapper.report(CompilerMessageSeverity.ERROR,
                                            "Class '" + psiClass.getQualifiedName() + "' was compiled with an incompatible version of Kotlin. " +
                                            "Its ABI version is " + abiVersion + ", expected ABI version is " + JvmAbi.VERSION,

@@ -30,7 +30,7 @@ import org.jetbrains.jet.lang.resolve.TypeResolver;
 import org.jetbrains.jet.lang.resolve.java.mapping.JavaToKotlinClassMap;
 import org.jetbrains.jet.lang.resolve.java.JvmClassName;
 import org.jetbrains.jet.lang.resolve.java.mapping.KotlinToJavaTypesMap;
-import org.jetbrains.jet.lang.resolve.java.TypeUsage;
+import org.jetbrains.jet.lang.resolve.java.resolver.TypeUsage;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.*;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -38,7 +38,7 @@ import org.jetbrains.jet.renderer.DescriptorRenderer;
 
 import java.util.*;
 
-import static org.jetbrains.jet.lang.resolve.java.TypeUsage.TYPE_ARGUMENT;
+import static org.jetbrains.jet.lang.resolve.java.resolver.TypeUsage.TYPE_ARGUMENT;
 import static org.jetbrains.jet.lang.types.Variance.INVARIANT;
 
 public class TypeTransformingVisitor extends JetVisitor<JetType, Void> {

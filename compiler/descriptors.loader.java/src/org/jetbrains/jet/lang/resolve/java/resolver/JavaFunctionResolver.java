@@ -21,9 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorParent;
 import org.jetbrains.jet.lang.descriptors.impl.SimpleFunctionDescriptorImpl;
-import org.jetbrains.jet.lang.resolve.DescriptorUtils;
-import org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils;
-import org.jetbrains.jet.lang.resolve.java.TypeUsage;
 import org.jetbrains.jet.lang.resolve.java.descriptor.ClassDescriptorFromJvmBytecode;
 import org.jetbrains.jet.lang.resolve.java.descriptor.JavaMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.java.descriptor.SamAdapterDescriptor;
@@ -31,6 +28,7 @@ import org.jetbrains.jet.lang.resolve.java.descriptor.SamConstructorDescriptor;
 import org.jetbrains.jet.lang.resolve.java.scope.NamedMembers;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaMethod;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaType;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
@@ -39,9 +37,9 @@ import org.jetbrains.jet.lang.types.TypeUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-import static org.jetbrains.jet.lang.resolve.DescriptorUtils.*;
-import static org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils.resolveOverrides;
+import static org.jetbrains.jet.lang.resolve.java.resolver.DescriptorResolverUtils.resolveOverrides;
 import static org.jetbrains.jet.lang.resolve.java.sam.SingleAbstractMethodUtils.*;
+import static org.jetbrains.jet.lang.resolve.DescriptorUtils.*;
 
 public final class JavaFunctionResolver {
     private JavaTypeTransformer typeTransformer;

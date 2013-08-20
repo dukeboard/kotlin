@@ -19,7 +19,10 @@ package org.jetbrains.jet.lang.resolve.java.resolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
-import org.jetbrains.jet.lang.resolve.java.structure.*;
+import org.jetbrains.jet.lang.resolve.java.structure.JavaClass;
+import org.jetbrains.jet.lang.resolve.java.structure.JavaElement;
+import org.jetbrains.jet.lang.resolve.java.structure.JavaField;
+import org.jetbrains.jet.lang.resolve.java.structure.JavaMethod;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 
 public interface JavaResolverCache {

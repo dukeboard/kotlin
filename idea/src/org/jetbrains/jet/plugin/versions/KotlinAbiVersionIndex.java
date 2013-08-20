@@ -29,10 +29,11 @@ import org.jetbrains.asm4.AnnotationVisitor;
 import org.jetbrains.asm4.ClassReader;
 import org.jetbrains.asm4.ClassVisitor;
 import org.jetbrains.asm4.Opcodes;
-import org.jetbrains.jet.lang.resolve.java.AbiVersionUtil;
 import org.jetbrains.jet.lang.resolve.java.JvmAnnotationNames;
 
 import java.util.Map;
+
+import static org.jetbrains.jet.lang.resolve.java.AbiVersionUtil.INVALID_ABI_VERSION;
 
 /**
  * Important! This is not a stub-based index. And it has its own version
@@ -83,7 +84,7 @@ public class KotlinAbiVersionIndex extends ScalarIndexExtension<Integer> {
                                     }
                                     else {
                                         // Version is set to something weird
-                                        result.put(AbiVersionUtil.INVALID_VERSION, null);
+                                        result.put(INVALID_ABI_VERSION, null);
                                     }
                                 }
                             }
@@ -97,7 +98,7 @@ public class KotlinAbiVersionIndex extends ScalarIndexExtension<Integer> {
 
             if (annotationPresent.get() && result.isEmpty()) {
                 // No version at all: the class is too old
-                result.put(AbiVersionUtil.INVALID_VERSION, null);
+                result.put(INVALID_ABI_VERSION, null);
             }
 
             return result;

@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package org.jetbrains.jet.lang.resolve.java;
+package org.jetbrains.jet.lang.resolve.java.resolver;
 
+import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
+import org.jetbrains.jet.lang.descriptors.impl.TypeParameterDescriptorImpl;
+import org.jetbrains.jet.lang.resolve.java.JvmAnnotationNames;
+import org.jetbrains.jet.lang.resolve.java.PackageClassUtils;
+import org.jetbrains.jet.lang.resolve.java.structure.*;
 import org.jetbrains.jet.lang.resolve.OverrideResolver;
 import org.jetbrains.jet.lang.resolve.TraceUtil;
-import org.jetbrains.jet.lang.resolve.java.structure.*;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
+import org.jetbrains.jet.lang.types.TypeConstructor;
+import org.jetbrains.jet.lang.types.TypeProjection;
+import org.jetbrains.jet.lang.types.TypeSubstitutor;
 
 import java.util.*;
 
 import static org.jetbrains.jet.lang.resolve.DescriptorUtils.isEnumClassObject;
 
 public final class DescriptorResolverUtils {
-
     private DescriptorResolverUtils() {
     }
 
@@ -216,5 +222,37 @@ public final class DescriptorResolverUtils {
             }
         }
         return typeParameter.getTypeProvider().createJavaLangObjectType();
+    }
+
+    @NotNull
+    public static Map<TypeParameterDescriptor, TypeParameterDescriptorImpl> recreateTypeParametersAndReturnMapping(
+            @NotNull List<TypeParameterDescriptor> originalParameters,
+            @Nullable DeclarationDescriptor newOwner
+    ) {
+        Map<TypeParameterDescriptor, TypeParameterDescriptorImpl> result = Maps.newLinkedHashMap(); // save order of type parameters
+        for (TypeParameterDescriptor typeParameter : originalParameters) {
+            result.put(typeParameter,
+                       TypeParameterDescriptorImpl.createForFurtherModification(
+                               newOwner == null ? typeParameter.getContainingDeclaration() : newOwner,
+                               typeParameter.getAnnotations(),
+                               typeParameter.isReified(),
+                               typeParameter.getVariance(),
+                               typeParameter.getName(),
+                               typeParameter.getIndex()));
+        }
+        return result;
+    }
+
+    @NotNull
+    public static TypeSubstitutor createSubstitutorForTypeParameters(
+            @NotNull Map<TypeParameterDescriptor, TypeParameterDescriptorImpl> originalToAltTypeParameters
+    ) {
+        Map<TypeConstructor, TypeProjection> typeSubstitutionContext = Maps.newHashMap();
+        for (Map.Entry<TypeParameterDescriptor, TypeParameterDescriptorImpl> originalToAltTypeParameter : originalToAltTypeParameters
+                .entrySet()) {
+            typeSubstitutionContext.put(originalToAltTypeParameter.getKey().getTypeConstructor(),
+                                        new TypeProjection(originalToAltTypeParameter.getValue().getDefaultType()));
+        }
+        return TypeSubstitutor.create(typeSubstitutionContext);
     }
 }

@@ -24,7 +24,6 @@ import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorParent;
-import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.java.*;
 import org.jetbrains.jet.lang.resolve.java.descriptor.JavaNamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.java.mapping.JavaToKotlinClassMap;
@@ -35,6 +34,7 @@ import org.jetbrains.jet.lang.resolve.java.structure.JavaClass;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaField;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaMethod;
 import org.jetbrains.jet.lang.resolve.java.structure.JavaPackage;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -42,7 +42,7 @@ import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import javax.inject.Inject;
 import java.util.*;
 
-import static org.jetbrains.jet.lang.resolve.java.AbiVersionUtil.INVALID_VERSION;
+import static org.jetbrains.jet.lang.resolve.java.AbiVersionUtil.INVALID_ABI_VERSION;
 
 public final class JavaNamespaceResolver {
 
@@ -157,7 +157,7 @@ public final class JavaNamespaceResolver {
                 boolean isCompiledKotlinPackageClass = DescriptorResolverUtils.isCompiledKotlinPackageClass(javaClass);
                 if (isOldKotlinPackageClass(javaClass) && !isCompiledKotlinPackageClass) {
                     // If psiClass has old annotations (@JetPackage) but doesn't have @KotlinPackage, report ABI version error
-                    errorReporterProvider.createForClass(javaClass).reportIncompatibleAbiVersion(INVALID_VERSION);
+                    errorReporterProvider.createForClass(javaClass).reportIncompatibleAbiVersion(INVALID_ABI_VERSION);
                 }
                 if (isCompiledKotlinPackageClass) {
                     // If psiClass has @KotlinPackage (regardless of whether it has @JetPackage or not), deserialize it to Kotlin descriptor.

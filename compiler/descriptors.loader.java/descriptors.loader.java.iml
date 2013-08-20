@@ -7,11 +7,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="backend" />
     <orderEntry type="module" module-name="frontend" />
-    <orderEntry type="module" module-name="frontend.java" />
+    <orderEntry type="module" module-name="serialization" />
+    <orderEntry type="module" module-name="serialization.java" />
+    <orderEntry type="library" name="javax.inject" level="project" />
+    <orderEntry type="library" name="annotations" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="intellij-core" level="project" />
-    <orderEntry type="module" module-name="descriptors.loader.java" />
+    <orderEntry type="module" module-name="runtime" />
   </component>
 </module>
 

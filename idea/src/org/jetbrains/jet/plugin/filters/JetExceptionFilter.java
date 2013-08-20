@@ -29,7 +29,6 @@ import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.java.JvmClassName;
 import org.jetbrains.jet.lang.resolve.java.PackageClassUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
-import org.jetbrains.jet.plugin.caches.resolve.IDELightClassGenerationSupport;
 import org.jetbrains.jet.plugin.util.DebuggerUtils;
 
 import java.util.regex.Matcher;

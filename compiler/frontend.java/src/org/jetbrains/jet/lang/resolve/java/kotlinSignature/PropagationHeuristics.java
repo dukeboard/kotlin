@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
 import org.jetbrains.jet.lang.descriptors.TypeParameterDescriptor;
 import org.jetbrains.jet.lang.descriptors.Visibilities;
-import org.jetbrains.jet.lang.resolve.java.resolver.JavaSupertypeResolver;
 import org.jetbrains.jet.lang.resolve.java.structure.*;
+import org.jetbrains.jet.lang.resolve.java.resolver.JavaSupertypeResolver;
 import org.jetbrains.jet.lang.resolve.java.structure.impl.JavaMethodImpl;
 import org.jetbrains.jet.lang.resolve.java.structure.impl.JavaTypeSubstitutorImpl;
 import org.jetbrains.jet.lang.resolve.name.Name;
@@ -43,7 +43,7 @@ import org.jetbrains.jet.renderer.DescriptorRenderer;
 
 import java.util.*;
 
-import static org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils.erasure;
+import static org.jetbrains.jet.lang.resolve.java.resolver.DescriptorResolverUtils.erasure;
 
 // This class contains heuristics for processing corner cases in propagation
 class PropagationHeuristics {

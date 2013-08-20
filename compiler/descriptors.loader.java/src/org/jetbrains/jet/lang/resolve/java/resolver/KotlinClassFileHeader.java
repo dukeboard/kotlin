@@ -13,7 +13,6 @@ import org.jetbrains.jet.descriptors.serialization.PackageData;
 import org.jetbrains.jet.lang.resolve.java.AbiVersionUtil;
 import org.jetbrains.jet.lang.resolve.java.JvmAnnotationNames;
 import org.jetbrains.jet.lang.resolve.java.JvmClassName;
-import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +49,7 @@ public final class KotlinClassFileHeader {
             }
         }
         catch (IOException e) {
-            throw ExceptionUtils.rethrow(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,7 +66,7 @@ public final class KotlinClassFileHeader {
         }
     }
 
-    private int version = AbiVersionUtil.INVALID_VERSION;
+    private int version = AbiVersionUtil.INVALID_ABI_VERSION;
 
     @Nullable
     private String[] annotationData = null;

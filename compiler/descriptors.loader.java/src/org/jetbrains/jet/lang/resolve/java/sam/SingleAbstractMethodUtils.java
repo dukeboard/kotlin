@@ -22,11 +22,10 @@ import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.TypeParameterDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
-import org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils;
 import org.jetbrains.jet.lang.resolve.java.descriptor.ClassDescriptorFromJvmBytecode;
 import org.jetbrains.jet.lang.resolve.java.descriptor.SamAdapterDescriptor;
 import org.jetbrains.jet.lang.resolve.java.descriptor.SamConstructorDescriptor;
-import org.jetbrains.jet.lang.resolve.java.kotlinSignature.SignaturesUtil;
+import org.jetbrains.jet.lang.resolve.java.resolver.DescriptorResolverUtils;
 import org.jetbrains.jet.lang.resolve.java.resolver.JavaSupertypeResolver;
 import org.jetbrains.jet.lang.resolve.java.structure.*;
 import org.jetbrains.jet.lang.resolve.name.FqName;
@@ -36,7 +35,6 @@ import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.util.*;
 
-import static org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils.erasure;
 import static org.jetbrains.jet.lang.types.Variance.INVARIANT;
 
 public class SingleAbstractMethodUtils {
@@ -271,8 +269,8 @@ public class SingleAbstractMethodUtils {
             @Nullable DeclarationDescriptor newOwner
     ) {
         Map<TypeParameterDescriptor, TypeParameterDescriptorImpl> traitToFunTypeParameters =
-                SignaturesUtil.recreateTypeParametersAndReturnMapping(originalParameters, newOwner);
-        TypeSubstitutor typeParametersSubstitutor = SignaturesUtil.createSubstitutorForTypeParameters(traitToFunTypeParameters);
+                DescriptorResolverUtils.recreateTypeParametersAndReturnMapping(originalParameters, newOwner);
+        TypeSubstitutor typeParametersSubstitutor = DescriptorResolverUtils.createSubstitutorForTypeParameters(traitToFunTypeParameters);
         for (Map.Entry<TypeParameterDescriptor, TypeParameterDescriptorImpl> mapEntry : traitToFunTypeParameters.entrySet()) {
             TypeParameterDescriptor traitTypeParameter = mapEntry.getKey();
             TypeParameterDescriptorImpl funTypeParameter = mapEntry.getValue();
@@ -406,8 +404,8 @@ public class SingleAbstractMethodUtils {
             if (parameters1.size() != parameters2.size()) return false;
 
             for (Iterator<JavaValueParameter> it1 = parameters1.iterator(), it2 = parameters2.iterator(); it1.hasNext(); ) {
-                JavaType type1 = erasure(substitutor1.substitute(it1.next().getType()), substitutor1);
-                JavaType type2 = erasure(substitutor2.substitute(it2.next().getType()), substitutor2);
+                JavaType type1 = DescriptorResolverUtils.erasure(substitutor1.substitute(it1.next().getType()), substitutor1);
+                JavaType type2 = DescriptorResolverUtils.erasure(substitutor2.substitute(it2.next().getType()), substitutor2);
                 if (!(type1 == null ? type2 == null : type1.equals(type2))) return false;
             }
 
